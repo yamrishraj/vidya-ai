@@ -1,0 +1,25 @@
+{
+  "name": "Vidya.AI",
+  "short_name": "Vidya AI",
+  "description": "Lightweight, fast, and distraction-free EdTech app for streaming video lectures, PDF notes, and practice quizzes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F8FAFC",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

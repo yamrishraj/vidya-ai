@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Vidya AI</title>
+  <meta name="description" content="Lightweight, fast, and distraction-free EdTech app for streaming video lectures and accessing PDF notes & quizzes." />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Vidya AI" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- View 1: Subjects List (MainActivity equivalent) -->
+  <section id="view-subjects" class="screen">
+    <header class="app-bar">
+      <h1 class="app-bar-title">Vidya AI</h1>
+      <button id="btnRefreshSubjects" class="icon-btn" type="button" aria-label="Refresh subjects" title="Refresh">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+        </svg>
+      </button>
+    </header>
+    <div class="divider"></div>
+
+    <div id="iosInstallHint" class="ios-install-hint hidden">
+      <span>iPhone पर App की तरह चलाने के लिए Safari में <strong>Share ↑</strong> → <strong>Add to Home Screen</strong> दबाएँ।</span>
+      <button id="btnDismissIosHint" class="ios-hint-close" type="button" aria-label="Close">×</button>
+    </div>
+
+    <main class="page-scroll">
+      <div class="container">
+        <div id="subjectsLoading" class="loading-box hidden">
+          <div class="spinner" aria-hidden="true"></div>
+        </div>
+        <div id="subjectsStatus" class="status-message hidden"></div>
+        <div id="rvSubjects" class="card-list"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- View 2: Lecture List (LectureListActivity equivalent) -->
+  <section id="view-lectures" class="screen hidden">
+    <header class="app-bar">
+      <button id="btnBackToSubjects" class="icon-btn back-btn" type="button" aria-label="Navigate back">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path fill="currentColor" d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z" />
+        </svg>
+      </button>
+      <h1 class="app-bar-title">Vidya AI</h1>
+    </header>
+    <div class="divider"></div>
+
+    <main class="page-scroll">
+      <div class="container">
+        <div id="tvSubjectHeading" class="subject-heading"></div>
+        <div id="rvLectures" class="card-list lectures-list"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- View 3: Player, PDF Notes & Quiz Card (PlayerActivity equivalent) -->
+  <section id="view-player" class="screen hidden">
+    <header class="app-bar">
+      <button id="btnBackToLectures" class="icon-btn back-btn" type="button" aria-label="Navigate back">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path fill="currentColor" d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z" />
+        </svg>
+      </button>
+      <h1 class="app-bar-title">Vidya AI</h1>
+    </header>
+    <div class="divider"></div>
+
+    <div class="player-shell">
+      <div class="video-wrapper">
+        <iframe
+          id="youtubePlayerFrame"
+          title="Lecture Video Player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+
+      <main class="player-content">
+        <div id="tvCurrentSubjectName" class="player-subject-label"></div>
+        <h2 id="tvCurrentLectureTitle" class="player-lecture-title"></h2>
+
+        <!-- Single rectangular card/box for PDF Notes (90% Left / 10% Right split) -->
+        <div id="cardPdfNotes" class="notes-card">
+          <a id="btnOpenNotes" class="notes-open-area" target="_blank" rel="noopener noreferrer">
+            <span id="tvNotesLabel" class="notes-label">Lecture Notes</span>
+          </a>
+          <div class="notes-divider" aria-hidden="true"></div>
+          <a id="btnDownloadNotes" class="notes-download-btn" target="_blank" rel="noopener noreferrer" aria-label="Download PDF Notes" title="Download PDF Notes">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <path fill="#F59E0B" d="M5,20h14v-2H5V20zM19,9h-4V3H9v6H5l7,7L19,9z" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Lecture Quiz Section Card -->
+        <button id="cardLectureQuiz" class="quiz-entry-card hidden" type="button">
+          <span class="quiz-entry-text">
+            <span id="tvQuizTitle" class="quiz-entry-title">Lecture Quiz</span>
+            <span id="tvQuizSubtitle" class="quiz-entry-subtitle">Start Practice Quiz</span>
+          </span>
+          <svg class="chevron-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path fill="#94A3B8" d="M10,6L8.59,7.41 13.17,12l-4.58,4.59L10,18l6,-6z" />
+          </svg>
+        </button>
+      </main>
+    </div>
+  </section>
+
+  <!-- View 4: Quiz Screen (QuizActivity equivalent) -->
+  <section id="view-quiz" class="screen hidden">
+    <header class="app-bar quiz-app-bar">
+      <button id="btnQuizBack" class="icon-btn back-btn" type="button" aria-label="Navigate back">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path fill="currentColor" d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z" />
+        </svg>
+      </button>
+      <div class="quiz-header-meta">
+        <h1 id="tvQuizHeaderTitle" class="quiz-header-title">Lecture Quiz</h1>
+        <div id="tvQuestionCounter" class="quiz-question-counter">Question 1 of 50</div>
+      </div>
+    </header>
+    <div class="divider"></div>
+
+    <div class="quiz-progress-track">
+      <div id="progressBarQuiz" class="quiz-progress-fill" style="width: 0%;"></div>
+    </div>
+
+    <div id="quizLoadingSpinner" class="loading-box hidden">
+      <div class="spinner" aria-hidden="true"></div>
+    </div>
+
+    <div id="quizErrorBox" class="error-box hidden">
+      <p id="tvQuizErrorMessage" class="error-message">Unable to load questions. Please check your internet connection.</p>
+      <button id="btnQuizRetry" class="btn-solid" type="button">Retry</button>
+    </div>
+
+    <main id="scrollQuizContent" class="page-scroll hidden">
+      <div class="container quiz-container">
+        <div class="question-card">
+          <div id="tvQuestionBadge" class="question-badge">QUESTION 1</div>
+          <div id="tvQuestionText" class="question-text"></div>
+        </div>
+
+        <div id="optionsContainer" class="options-container"></div>
+      </div>
+    </main>
+
+    <footer id="quizBottomBar" class="quiz-bottom-bar hidden">
+      <div class="quiz-bottom-inner">
+        <button id="btnPreviousQuestion" class="btn-outlined" type="button">Previous</button>
+        <button id="btnNextQuestion" class="btn-solid" type="button">Next</button>
+      </div>
+    </footer>
+
+    <!-- Result Overlay -->
+    <div id="layoutResult" class="result-overlay hidden">
+      <div class="result-card">
+        <div class="result-emoji" aria-hidden="true">🎉</div>
+        <h2 id="tvResultHeading" class="result-heading">Quiz Completed!</h2>
+        <div id="tvResultScore" class="result-score">0 / 0 (0%)</div>
+        <div id="tvResultBreakdown" class="result-breakdown"></div>
+        <div class="result-actions">
+          <button id="btnRestartQuiz" class="btn-solid full-width" type="button">Restart Quiz</button>
+          <button id="btnDoneQuiz" class="btn-outlined full-width" type="button">Back to Lecture</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
